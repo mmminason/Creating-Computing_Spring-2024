@@ -1,0 +1,30 @@
+body{
+    background: rgb(247, 255, 209);
+    color: rgb(64, 109, 244);
+}
+ul{
+    background: rgb(229, 180, 180);
+    color: rgb(244, 64, 121);
+}
+.rounded{
+    border-radius: 10px;
+}
+.item{
+    font-family: Arial, Helvetica, sans-serif;
+}
+#first-item{
+    font-style: italic;
+    font-family:'Courier New', Courier, monospace;
+}
+.p5Canvas{
+    border-radius: 10px;
+}
+.my-button{
+    color :red;
+}
+.background{
+    position:absolute;
+    top:0;
+    left:0;
+    z-index: -1;
+}
