@@ -56,6 +56,11 @@ function draw() {
    
     data.shapes.sort((a,b)=>a.pos[0] - b.pos[0]);
     
+/*
+    const filtered = data.shapes.filter(function(item){
+        return item.pos[0]>10;
+    });
+*/
     const filtered = data.shapes.filter(item=>item.pos[0]>10);
     
     filtered.forEach((shapeObj)=>{
