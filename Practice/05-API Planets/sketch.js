@@ -1,8 +1,6 @@
 let planetsData = [];
 
-async function setup() {
-    createCanvas(800, 400);
-
+async function fetchData() {
     const secretResponse = await fetch('./data/secret.json');
     const secretJson = await secretResponse.json();
     const apiKey = secretJson.apiKey; // Replace with apikey from secretJson
@@ -22,6 +20,7 @@ async function setup() {
                 },
             };
 
+
             const response = await fetch(url, options);
             const result = await response.json();
             console.log(result);
@@ -33,4 +32,71 @@ async function setup() {
         console.error('Error:', error);
     }
 }
-console.log(planetsData);
+
+
+async function setup() {
+    createCanvas(1000, 1000);
+    background(10);
+    await fetchData();
+
+    drawPeriodCircle();
+
+    // initial Xpos of planet & Gap
+    let Xpos = 50;
+    let gap = 50;
+
+    // Draw each planet on the canvas
+    for (let i = 0; i < planetsData.length; i++) {
+        const planet = planetsData[i][0];
+
+        const radius = parseFloat(planet.radius);
+        const period = parseFloat(planet.period);
+        const temperature = planet.temperature;
+
+        const diameter = map(radius, 0.0001, 1, 10, 180);
+        console.log(diameter);
+
+        const x = Xpos + diameter / 2; // +radius of current planet
+        //y value > period (공전주기), 위로 갈수록 공전주기가 길다. 
+        const y = map(period, 60000, 80, height / 5, height * 4 / 5);
+
+        const planetColor = map(temperature, 70, 750, 10, 100);
+
+        drawPlanet(x, y, diameter, planetColor, planet.name);
+
+        // Update x-coordinate for the next planet
+        Xpos += diameter + gap; // Adjust the gap between planets
+
+        beforeDiameter = diameter;
+
+    }
+}
+
+function drawPeriodCircle() {
+    let circleSize = 300;
+    let circleGap = 10;
+    for (let i = 0; i < 25; i++) {
+        noFill();
+        stroke(50);
+        ellipse(-200, height / 2, circleSize, circleSize);
+        circleSize += i * circleGap;
+    }
+
+}
+
+
+function drawPlanet(x, y, diameter, planetcolor, name) {
+    const radius = diameter / 2;
+
+    // Draw planet
+    colorMode(HSB, 100);
+    fill(0,100,planetcolor);
+    noStroke();
+    ellipse(x, y, diameter, diameter);
+
+    // Draw planet name
+    fill(200);
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    text(name, x, y + radius + 10);
+}
