@@ -1,11 +1,18 @@
+// x value : distance between with sun and planet
+// y value : orbital period of planet(bottom to top)
+// brightness of planet : temperature of planet
+
+
+
 let planetsData = [];
+let stars = [];
 
 async function fetchData() {
     const secretResponse = await fetch('./data/secret.json');
     const secretJson = await secretResponse.json();
     const apiKey = secretJson.apiKey; // Replace with apikey from secretJson
 
-    // Api에서 각 행성 데이터를 불러오기 위한 array, 한번에 불러오는게 불가능한 것 같아요 
+    // Api에서 각 행성 데이터를 불러오기 위한 array
     const planetNames = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
 
 
@@ -36,14 +43,16 @@ async function fetchData() {
 
 async function setup() {
     createCanvas(1000, 1000);
-    background(10);
     await fetchData();
-
+    generateStars(200);
+    background(5, 10, 30);
     drawPeriodCircle();
+}
+function draw() {
 
-    // initial Xpos of planet & Gap
-    let Xpos = 50;
-    let gap = 50;
+    drawStars();
+    drawSun();
+
 
     // Draw each planet on the canvas
     for (let i = 0; i < planetsData.length; i++) {
@@ -52,51 +61,90 @@ async function setup() {
         const radius = parseFloat(planet.radius);
         const period = parseFloat(planet.period);
         const temperature = planet.temperature;
+        const sDistance = planet.semi_major_axis;
 
-        const diameter = map(radius, 0.0001, 1, 10, 180);
-        console.log(diameter);
 
-        const x = Xpos + diameter / 2; // +radius of current planet
+        const diameter = map(radius, 0.0001, 1, 2, 90);
+        const x = map(sDistance, 0, 31, 15, width);
+
+
         //y value > period (공전주기), 위로 갈수록 공전주기가 길다. 
-        const y = map(period, 60000, 80, height / 5, height * 4 / 5);
+        const y = map(period, 60000, 80, 50, height - 100);
+
 
         const planetColor = map(temperature, 70, 750, 10, 100);
 
         drawPlanet(x, y, diameter, planetColor, planet.name);
 
-        // Update x-coordinate for the next planet
-        Xpos += diameter + gap; // Adjust the gap between planets
 
         beforeDiameter = diameter;
 
     }
+
 }
 
+
 function drawPeriodCircle() {
-    let circleSize = 300;
+    let circleSize = 285;
     let circleGap = 10;
     for (let i = 0; i < 25; i++) {
-        noFill();
-        stroke(50);
-        ellipse(-200, height / 2, circleSize, circleSize);
+
+        stroke(244,76,17,255-i*10);
+        strokeWeight(0.5);
+        fill(30, 30, 120, 5);
+        ellipse(15, height / 2, circleSize, circleSize);
         circleSize += i * circleGap;
     }
 
 }
 
-
 function drawPlanet(x, y, diameter, planetcolor, name) {
     const radius = diameter / 2;
 
     // Draw planet
+    push();
     colorMode(HSB, 100);
-    fill(0,100,planetcolor);
+    fill(15, 90, planetcolor);
     noStroke();
     ellipse(x, y, diameter, diameter);
+    pop();
 
     // Draw planet name
-    fill(200);
-    textAlign(CENTER, CENTER);
-    textSize(10);
-    text(name, x, y + radius + 10);
+    push();
+    translate(x, y);
+    rotate(HALF_PI);
+    fill(150,230,255);
+    textAlign(LEFT, CENTER);
+    textFont('Helvetica', 9);
+    text(name, radius + 10, 0);
+    pop();
 }
+function drawSun() {
+    noStroke();
+    fill(244,76,17);
+    ellipse(15, height/2, 280, 280);
+}
+
+function generateStars(numStars) {
+    for (let i = 0; i < numStars; i++) {
+        const x = random(width);
+        const y = random(height);
+        const size = random(1, 3);
+        const brightness = random(100, 255);
+        const star = { x, y, size, brightness };
+        stars.push(star);
+    }
+}
+
+function drawStars() {
+    for (const star of stars) {
+        fill(star.brightness);
+        noStroke();
+        ellipse(star.x, star.y, star.size, star.size);
+
+        if (random() > 0.95) {
+            star.brightness = random(100, 255);
+        }
+    }
+}
+
