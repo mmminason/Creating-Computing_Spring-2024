@@ -4,6 +4,7 @@ let shapes = [];
 function setup(){
   createCanvas(600,600);
   rectMode(CENTER);
+  colorMode(HSB, 360, 100, 100);
 
   engine = Matter.Engine.create();
 
